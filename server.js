@@ -1,12 +1,13 @@
 const express = require("express");
 const { ApolloServer, gql } = require("apollo-server-express");
 const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
-
+const i18Next = require("./i18next");
+const intlDirective = require("./intlDirective");
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
+  directive @intl on FIELD_DEFINITION
   type Query {
-    hello: String
+    greeting: String @intl
     id: Int
   }
 `;
@@ -14,20 +15,24 @@ const typeDefs = gql`
 // Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
-    hello: () => "Hello world!",
+    greeting: () => "Hello world!",
     id: () => 1,
   },
 };
 
+// Final context funciton
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  // Added context. here you should read the lang cookies.
-  // if you are sending request from graphql playground, please follow those instructions:
-  // https://github.com/prisma-labs/graphql-playground/issues/748#issuecomment-412524510
-  context: ({ req }) => {
+  context: async ({ req }) => {
     // now we have the user requeted language
     const lang = req.cookies.lang;
+    const t = await i18Next(lang);
+    return { t };
+  },
+  schemaDirectives: {
+    intl: intlDirective,
   },
 });
 
