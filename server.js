@@ -1,7 +1,7 @@
 const express = require("express");
 const { ApolloServer, gql } = require("apollo-server-express");
 const cookieParser = require("cookie-parser");
-const i18Next = require("./i18next");
+usconst i18Next = require("./i18next");
 const intlDirective = require("./intlDirective");
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
