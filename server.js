@@ -1,35 +1,18 @@
-const express = require("express");
-const { ApolloServer, gql } = require("apollo-server-express");
-const cookieParser = require("cookie-parser");
-usconst i18Next = require("./i18next");
-const intlDirective = require("./intlDirective");
-// Construct a schema, using GraphQL schema language
-const typeDefs = gql`
-  directive @intl on FIELD_DEFINITION
-  type Query {
-    greeting: String @intl
-    id: Int
-  }
-`;
-
-// Provide resolver functions for your schema fields
-const resolvers = {
-  Query: {
-    greeting: () => "Hello world!",
-    id: () => 1,
-  },
-};
-
-// Final context funciton
+import express from "express";
+import { ApolloServer, gql } from "apollo-server-express";
+import cookieParser from "cookie-parser";
+import intlDirective from "./intlDirective";
+import "./i18next";
+import typeDefs from "./typeDefs";
+import resolvers from "./resolvers";
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: async ({ req }) => {
     // now we have the user requeted language
-    const lang = req.cookies.lang;
-    const t = await i18Next(lang);
-    return { t };
+    const lng = req.cookies.lng;
+    return { lng };
   },
   schemaDirectives: {
     intl: intlDirective,
